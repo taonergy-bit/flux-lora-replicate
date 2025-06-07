@@ -1,7 +1,0 @@
-name: flux-lora
-entrypoint: main.py
-runtime: python
-ports:
-  - 8000
-resources:
-  gpu: A10G

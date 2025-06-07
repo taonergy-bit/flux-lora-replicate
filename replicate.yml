@@ -1,0 +1,14 @@
+name: flux-lora
+python_version: "3.10"
+gpu: A10G
+system_packages:
+  - git
+  - wget
+python_packages:
+  - diffusers
+  - torch
+  - transformers
+  - safetensors
+  - accelerate
+  - requests
+predict: main:Predictor
