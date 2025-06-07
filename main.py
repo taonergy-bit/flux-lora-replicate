@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from diffusers import DiffusionPipeline
 import torch
-import os
 import requests
+import os
 from uuid import uuid4
 
 app = FastAPI()
@@ -21,20 +21,18 @@ class Request(BaseModel):
 
 
 @app.post("/generate")
-def generate_image(body: Request):
-    filename = body.lora_url.split("/")[-1]
-    local_path = f"/tmp/{filename}"
+def generate(req: Request):
+    # Download LoRA
+    lora_filename = f"/tmp/{uuid4().hex}.safetensors"
+    r = requests.get(req.lora_url)
+    with open(lora_filename, "wb") as f:
+        f.write(r.content)
 
-    if not os.path.exists(local_path):
-        r = requests.get(body.lora_url)
-        with open(local_path, "wb") as f:
-            f.write(r.content)
+    # Load LoRA and run
+    pipe.load_lora_weights(lora_filename)
+    image = pipe(prompt=req.prompt, width=req.width, height=req.height).images[0]
 
-    pipe.load_lora_weights(local_path)
+    path = f"/tmp/{uuid4().hex}.png"
+    image.save(path)
 
-    image = pipe(prompt=body.prompt, width=body.width, height=body.height).images[0]
-
-    image_path = f"/tmp/{uuid4().hex}.png"
-    image.save(image_path)
-
-    return {"url": f"https://fal.run/file{image_path}"}
+    return {"path": path}

@@ -1,0 +1,16 @@
+# replicate.yaml
+name: flux-lora
+run:
+  command: python main.py
+  gpu: true
+  python_version: "3.10"
+  system_packages:
+    - "libgl1"
+  python_packages:
+    - "diffusers[torch]"
+    - "torch"
+    - "transformers"
+    - "accelerate"
+    - "fastapi"
+    - "uvicorn"
+    - "pydantic"
